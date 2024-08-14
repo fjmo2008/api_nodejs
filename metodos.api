@@ -1,0 +1,14 @@
+METODOS POST: requieren user/pass
+
+/listaesperacirugia
+/lecirugia
+/ticketscirugia
+/sms_vistas
+/sms_cait_acogida
+/sms_a_enviar
+
+
+METODOS GET:
+
+/final
+/intermedio

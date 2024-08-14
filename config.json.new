@@ -1,0 +1,12 @@
+{
+    "instantclient": "e:\\instantclient_19_22",
+    "connect_string": "ip:puerto/SID",
+    "db_user": "xxx",
+    "db_pass": "xxx",
+    "ws_user": "xxx",
+    "ws_pass": "xxx",
+    "certificado_crt": "certificado.crt",
+    "certificado_key": "certificado.key",
+    "https_puerto": 10443,
+    "http_puerto": 3000      
+  }
