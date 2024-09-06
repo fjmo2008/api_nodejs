@@ -1,6 +1,7 @@
 METODOS POST: requieren user/pass
 
 /listaesperacirugia
+/pulserascirugia
 /lecirugia
 /ticketscirugia
 /sms_vistas

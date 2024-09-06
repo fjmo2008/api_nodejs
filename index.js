@@ -151,7 +151,7 @@ app.post('/ticketscirugia', async (req, res) => {
       connection = await oracledb.getConnection(dbConfig);
   
       // Ejecutamos una consulta SQL
-      const query = `SELECT identificador, nhc, paciente, hora, description as servicio, cama FROM pnl_v_le_qui@dbl_ticares.world le join com_services@dbl_ticares.world cser on cser.xkey = le.servicio where centro = :centro order by paciente`;
+      const query = `SELECT identificador, nhc, paciente, hora, description as servicio, cama, fec_nacimiento, edad FROM pnl_v_le_qui_extendido@dbl_ticares.world le join com_services@dbl_ticares.world cser on cser.xkey = le.servicio where centro = :centro order by paciente`;
 
       // El  parámetro pasado por JSON se mete en la variable para la consulta
       const bindVars = {
@@ -175,7 +175,48 @@ app.post('/ticketscirugia', async (req, res) => {
   }
 });
 
-  // sms_vistas -> Recibe como parametro el codigo del centro y el user/pass para consumir el WS 
+// pulserascirugia -> Recibe como parametro el codigo del centro y el user/pass para consumir el WS 
+// devuelve la lista de espera de cirugia para generar las pulseras
+app.post('/pulserascirugia', async (req, res) => {
+  // Obtenemos los datos JSON del cuerpo de la solicitud
+  const datos = req.body;
+
+  if (!(datos.username === WS_USER && datos.password === WS_PASS)) {
+      console.log('Error al autenticar el webservice');
+      res.status(500).send('Error al autenticar el webservice');
+  } else {
+
+      // Ahora procesamos la consulta con la respuesta
+      let connection;
+      try {
+      // Conectamos a la base de datos
+      connection = await oracledb.getConnection(dbConfig);
+  
+      // Ejecutamos una consulta SQL
+      const query = "select * from v14_pulseras_cirugia@dbl_ticares.world where intervention_date between to_date(:fecha,'dd-mm-yyyy') and to_date(:fecha,'dd-mm-yyyy')+1";
+      // El  parámetro pasado por JSON se mete en la variable para la consulta
+      const bindVars = {
+          fecha: datos.fecha
+      };
+  
+      const result = await connection.execute(query, bindVars);
+  
+      // Enviamos los datos como respuesta
+      res.json(result.rows);
+      } catch (err) {
+      // Manejamos errores de conexión o consulta
+      console.error(err);
+      res.status(500).send('Error al obtener datos');
+      } finally {
+      // Cerramos la conexión
+      if (connection) {
+          await connection.close();
+      }
+      }  
+  }
+});
+
+// sms_vistas -> Recibe como parametro el codigo del centro y el user/pass para consumir el WS 
 // devuelve la lista de vistas sobre las que hay que lanzar los sms
 app.post('/sms_vistas', async (req, res) => {
     // Obtenemos los datos JSON del cuerpo de la solicitud
